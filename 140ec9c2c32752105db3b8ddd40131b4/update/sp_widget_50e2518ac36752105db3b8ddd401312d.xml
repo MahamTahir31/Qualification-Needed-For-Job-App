@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sp_widget">
+    <sp_widget action="INSERT_OR_UPDATE">
+        <category>custom</category>
+        <client_script><![CDATA[function($scope) {
+  $scope.data = {
+    qualifications: []
+  };
+ 
+  // Example JSON data
+  $scope.data.qualifications = [
+    { regime: 'FCA', requestedQualification: 'Unit 1 - UK Regulations', status: 'Pending', available: 'NO', showUploadSection: false },
+    { regime: 'FCA', requestedQualification: 'Unit 2 - Securities', status: 'Pending', available: 'NO', showUploadSection: false },
+    { regime: 'FCA', requestedQualification: 'Unit 3 - Derivatives', status: 'Pending', available: 'NO', showUploadSection: false }
+    // Add more qualifications as needed
+  ];
+ 
+  $scope.toggleUploadSection = function(qualification) {
+    qualification.showUploadSection = !qualification.showUploadSection;
+  };
+}
+ ]]></client_script>
+        <controller_as>c</controller_as>
+        <css>.table {
+  width: 100%;
+  margin: 20px 0;
+  border-collapse: collapse;
+}
+
+.table th,
+.table td {
+  padding: 10px;
+  text-align: left;
+  border: 1px solid #ddd;
+}
+
+.table th {
+  background-color: #f4f4f4;
+  font-weight: bold;
+}
+
+.available {
+  color: green;
+  font-weight: bold;
+}
+
+.not-available {
+  color: red;
+  font-weight: bold;
+}</css>
+        <data_table>sp_instance</data_table>
+        <demo_data/>
+        <description/>
+        <docs/>
+        <field_list/>
+        <has_preview>true</has_preview>
+        <id>emp_qualification</id>
+        <internal>false</internal>
+        <link><![CDATA[function link(scope, element, attrs, controller) {  }]]></link>
+        <name>Emp Qualification</name>
+        <option_schema/>
+        <public>false</public>
+        <roles/>
+        <script/>
+        <servicenow>false</servicenow>
+        <sys_class_name>sp_widget</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2025-02-07 11:28:33</sys_created_on>
+        <sys_id>50e2518ac36752105db3b8ddd401312d</sys_id>
+        <sys_mod_count>35</sys_mod_count>
+        <sys_name>Emp Qualification</sys_name>
+        <sys_package display_value="Story-I Qualification Needed For Job" source="x_1589793_story_i">140ec9c2c32752105db3b8ddd40131b4</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Story-I Qualification Needed For Job">140ec9c2c32752105db3b8ddd40131b4</sys_scope>
+        <sys_update_name>sp_widget_50e2518ac36752105db3b8ddd401312d</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2025-02-08 14:47:56</sys_updated_on>
+        <template><![CDATA[<div class="table-responsive">
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th>Regime</th>
+        <th>Requested Qualification</th>
+        <th>Status</th>
+        <th>Qualification Available</th>
+      </tr>
+    </thead>
+<tbody>
+      <tr ng-repeat-start="qualification in data.qualifications">
+        <td>{{qualification.regime}}</td>
+        <td>{{qualification.requestedQualification}}</td>
+        <td>{{qualification.status}}</td>
+        <td>
+          <button class="btn btn-primary" ng-click="toggleUploadSection(qualification)">{{qualification.showUploadSection ? 'Yes' : 'Yes'}}</button>
+        
+        </td>
+      </tr>
+      <tr ng-if="qualification.showUploadSection" ng-repeat-end>
+        <td colspan="4">
+          <div class="upload-section">
+            <p class="info-text">Uploads are only needed for exams taken in the last 12 months. If your exam is older, please contact support.</p>
+            <div class="form-group">
+              <label>Qualification Pass Date:</label>
+              <input type="date" ng-model="qualification.passDate" class="form-control">
+            </div>
+            <div class="form-group">
+              <label>Upload Qualification Evidence:</label>
+              <input type="file" ng-model="qualification.evidenceFile" class="form-control">
+            </div>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+]]></template>
+    </sp_widget>
+</record_update>
