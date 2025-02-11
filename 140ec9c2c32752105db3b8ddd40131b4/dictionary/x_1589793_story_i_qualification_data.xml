@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?><database>
+    <element db_object_id="252e0193c32752105db3b8ddd4013117" label="Qualification Data" max_length="40" name="x_1589793_story_i_qualification_data" type="collection">
+        <element label="Form Data" max_length="40" name="form_data" type="string"/>
+    </element>
+</database>

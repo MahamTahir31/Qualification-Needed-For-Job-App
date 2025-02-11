@@ -1,17 +1,80 @@
 <?xml version="1.0" encoding="UTF-8"?><record_update table="sp_widget">
     <sp_widget action="INSERT_OR_UPDATE">
         <category>custom</category>
-        <client_script><![CDATA[function($scope) {
+        <client_script><![CDATA[function ($scope, $http) {
   $scope.data = {
-    qualifications: []
+    qualifications: [
+      {
+        regime: 'FCA',
+        requestedQualification: 'Unit 1 - UK Regulations',
+        status: 'Pending',
+        available: 'NO',
+        showYesSection: false,
+        showNoSection: false,
+        selectedAlternative: '',
+        alternativeOptions: ['CFA Level 2 & IMC Level 4', 'CFA Level 3', 'FCA']
+      },
+      {
+        regime: 'FCA',
+        requestedQualification: 'Unit 2 - Securities',
+        status: 'Pending',
+        available: 'NO',
+        showYesSection: false,
+        showNoSection: false,
+        selectedAlternative: '',
+        alternativeOptions: ['CFA Level 2 & IMC Level 4', 'CFA Level 3', 'FCA']
+      },
+      {
+        regime: 'FCA',
+        requestedQualification: 'Unit 3 - Derivatives',
+        status: 'Pending',
+        available: 'NO',
+        showYesSection: false,
+        showNoSection: false,
+        selectedAlternative: '',
+        alternativeOptions: ['CFA Level 2 & IMC Level 4', 'CFA Level 3', 'FCA']
+      }
+    ]
   };
-  // Example JSON data
-  $scope.data.qualifications = [
-    { regime: 'FCA', requestedQualification: 'Unit 1 - UK Regulations', status: 'Pending', available: 'NO', showYesSection: false, showNoSection: false },
-    { regime: 'FCA', requestedQualification: 'Unit 2 - Securities', status: 'Pending', available: 'NO', showYesSection: false, showNoSection: false },
-    { regime: 'FCA', requestedQualification: 'Unit 3 - Derivatives', status: 'Pending', available: 'NO', showYesSection: false, showNoSection: false }
-    // Add more qualifications as needed
-  ];
+
+  // Fetch data from ServiceNow Table on page load
+
+  function loadQualifications() {
+    $http.get('/api/now/table/x_1589793_story_i_qualification_data')
+      .then(function (response) {
+        if (response.data.result.length > 0) {
+          // Merge loaded data with dummy data if exists
+          let savedData = JSON.parse(response.data.result[0].form_data);
+          $scope.data.qualifications = savedData.length ? savedData : $scope.data.qualifications;
+        }
+      })
+      .catch(function (error) {
+        console.error("Error loading qualifications:", error);
+      });
+  }
+
+  // Call the function to load data
+  loadQualifications();
+
+  // Save Form Data to ServiceNow Table
+  $scope.saveForm = function () {
+    var jsonData = JSON.stringify($scope.data.qualifications);
+
+    var payload = {
+      form_data: jsonData
+    };
+
+    $http.post('/api/now/table/x_1589793_story_i_qualification_data', payload)
+      .then(function (response) {
+        alert("Form saved successfully!");
+      })
+      .catch(function (error) {
+        console.error("Error saving form:", error);
+      });
+  };
+	
+
+  // Toggle Yes Section
   $scope.toggleYesSection = function (qualification) {
     qualification.showYesSection = !qualification.showYesSection;
     if (qualification.showYesSection) {
@@ -19,19 +82,21 @@
     }
   };
 
- $scope.toggleNoSection = function (qualification) {
-  qualification.showNoSection = !qualification.showNoSection;
-  if (qualification.showNoSection) {
-    qualification.showYesSection = false;
-  }
-};
+  // Toggle No Section
+  $scope.toggleNoSection = function (qualification) {
+    qualification.showNoSection = !qualification.showNoSection;
+    if (qualification.showNoSection) {
+      qualification.showYesSection = false;
+      qualification.selectedAlternative = ''; // Reset selected alternative on reopening
+    }
+  };
 
-	
-	$scope.triggerFileUpload = function () {
-  document.getElementById('fileInput').click();
-};
-
-}]]></client_script>
+  // File Upload Trigger
+  $scope.triggerFileUpload = function () {
+    document.getElementById('fileInput').click();
+  };
+}
+]]></client_script>
         <controller_as>c</controller_as>
         <css>.table {
   width: 100%;
@@ -65,6 +130,7 @@
   width: 50%;
  
 }
+
 </css>
         <data_table>sp_instance</data_table>
         <demo_data/>
@@ -85,42 +151,40 @@
         <sys_created_by>admin</sys_created_by>
         <sys_created_on>2025-02-07 11:28:33</sys_created_on>
         <sys_id>50e2518ac36752105db3b8ddd401312d</sys_id>
-        <sys_mod_count>62</sys_mod_count>
+        <sys_mod_count>77</sys_mod_count>
         <sys_name>Emp Qualification</sys_name>
         <sys_package display_value="Story-I Qualification Needed For Job" source="x_1589793_story_i">140ec9c2c32752105db3b8ddd40131b4</sys_package>
         <sys_policy/>
         <sys_scope display_value="Story-I Qualification Needed For Job">140ec9c2c32752105db3b8ddd40131b4</sys_scope>
         <sys_update_name>sp_widget_50e2518ac36752105db3b8ddd401312d</sys_update_name>
         <sys_updated_by>admin</sys_updated_by>
-        <sys_updated_on>2025-02-10 17:52:56</sys_updated_on>
-        <template><![CDATA[ 
-<div class="table-responsive">
-<table class="table table-bordered">
-<thead>
-<tr>
-<th>Regime</th>
-<th>Requested Qualification</th>
-<th>Status</th>
-<th>Qualification Available</th>
-</tr>
-</thead>
-<tbody>
-<tr ng-repeat-start="qualification in data.qualifications">
-<td>{{qualification.regime}}</td>
-<td>{{qualification.requestedQualification}}</td>
-<td>{{qualification.status}}</td>
-<td>
-<button class="btn btn-primary" ng-click="toggleYesSection(qualification)">
-  {{qualification.showYesSection ? 'Hide Yes Section' : 'Yes'}}
-</button>
-<button class="btn btn-danger" ng-click="toggleNoSection(qualification)">
-  {{qualification.showNoSection ? 'Hide No Section' : 'No'}}
-</button>
-
-</td>
-</tr>
-  
-<tr ng-if="qualification.showYesSection" ng-repeat-end>
+        <sys_updated_on>2025-02-11 08:34:02</sys_updated_on>
+        <template><![CDATA[<div class="table-responsive">
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th>Regime</th>
+        <th>Requested Qualification</th>
+        <th>Status</th>
+        <th>Qualification Available</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr ng-repeat-start="qualification in data.qualifications">
+        <td>{{qualification.regime}}</td>
+        <td>{{qualification.requestedQualification}}</td>
+        <td>{{qualification.status}}</td>
+        <td>
+          <button class="btn btn-primary" ng-click="toggleYesSection(qualification)">
+            {{qualification.showYesSection ? 'Hide Yes Section' : 'Yes'}}
+          </button>
+          <button class="btn btn-danger" ng-click="toggleNoSection(qualification)">
+            {{qualification.showNoSection ? 'Hide No Section' : 'No'}}
+          </button>
+        </td>
+      </tr>
+      
+      <tr ng-if="qualification.showYesSection">
 <td colspan="4">
 <div class="upload-section">
 <p class="info-text">Uploads are only needed for exams taken in the last 12 months. If your exam is older, please contact support.</p>
@@ -138,17 +202,45 @@
 </div>
 </td>
 </tr>
-  
-<tr ng-if="qualification.showNoSection" ng-repeat-end>
-  <td colspan="4">
-    jtbrgkjbgkjebgm
-  </td>
-</tr>
-  
-</tbody>
-</table>
+
+      <!-- "No" Section -->
+      <tr ng-if="qualification.showNoSection" ng-repeat-end>
+        <td colspan="4">
+          <div class="alternative-options half-width">
+            <label>Select Alternative Options</label>
+            <select class="form-control" ng-model="qualification.selectedAlternative" ng-options="option for option in qualification.alternativeOptions">
+              <option value="">None</option>
+            </select>
+          </div>
+
+          <!-- Show Alternative Sub-Options When Selected -->
+          <div ng-if="qualification.selectedAlternative">
+            <h5>Alternative Qualification</h5>
+            <div class="form-group">
+              <label>{{qualification.selectedAlternative}} Pass Date:</label>
+              <input type="date" ng-model="qualification.passDate" class="form-control">
+            </div>
+            <div class="form-group">
+              <label>Upload Qualification Evidence:</label>
+              <button class="btn btn-primary" ng-click="triggerFileUpload()">Upload File</button>
+              <input type="file" id="fileInput" class="form-control" style="display: none;" ng-model="qualification.evidenceFile">
+              <span ng-if="qualification.evidenceFile">File Uploaded: {{qualification.evidenceFile.name}}</span>
+            </div>
+          </div>
+        </td>
+      </tr>
+      
+      <tr>
+      <td>
+       <div class="d-flex justify-content-center mt-3">
+  <button class="btn btn-success" ng-click="saveForm()">Save</button>
 </div>
 
- ]]></template>
+
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>]]></template>
     </sp_widget>
 </record_update>
