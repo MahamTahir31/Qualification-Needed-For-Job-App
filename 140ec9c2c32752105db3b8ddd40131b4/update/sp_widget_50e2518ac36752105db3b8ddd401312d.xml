@@ -5,7 +5,7 @@
   $scope.data = {
     qualifications: []
   };
-
+ 
   // Example JSON data
   $scope.data.qualifications = [
     {
@@ -39,7 +39,7 @@
       alternativeOptions: ['CFA Level 2 & IMC Level 4', 'CFA Level 3', 'FCA']
     }
   ];
-
+ 
   // Toggle Yes Section
   $scope.toggleYesSection = function (qualification) {
     qualification.showYesSection = !qualification.showYesSection;
@@ -47,7 +47,7 @@
       qualification.showNoSection = false; // Close "No" section if "Yes" is opened
     }
   };
-
+ 
   // Toggle No Section
   $scope.toggleNoSection = function (qualification) {
     qualification.showNoSection = !qualification.showNoSection;
@@ -56,22 +56,47 @@
       qualification.selectedAlternative = ''; // Reset selected alternative on reopening
     }
   };
-
+ 
   // File Upload Trigger
   $scope.triggerFileUpload = function () {
     document.getElementById('fileInput').click();
   };
-
+ 
       var apiUrl = "/api/now/table/x_1589793_story_i_qualification_data"; // Replace with actual table name
-
+ 
     // Function to Save Form Data
     $scope.saveForm = function () {
-        var jsonData = JSON.stringify($scope.data.qualifications); // Convert to JSON string
-
+			var filteredData = [];
+ 
+    for (var i = 0; i < $scope.data.qualifications.length; i++) {
+        var q = $scope.data.qualifications[i];
+        var entry = {};
+ 
+        // Only add fields if they are not empty or undefined
+        if (q.regime) entry.regime = q.regime;
+        if (q.requestedQualification) entry.requestedQualification = q.requestedQualification;
+        if (q.status) entry.status = q.status;
+        if (q.showYesSection) {
+            if (q.passDate) entry.passDate = q.passDate;
+            if (q.evidenceFile) entry.evidenceFile = q.evidenceFile;
+        }
+        if (q.showNoSection && q.selectedAlternative) {
+            entry.selectedAlternative = q.selectedAlternative;
+						entry.passDate = q.passDate;
+					entry.evidenceFile = q.evidenceFile;
+        }
+ 
+        // Only push non-empty entries
+        if (Object.keys(entry).length > 0) {
+            filteredData.push(entry);
+        }
+    }
+    var jsonData = JSON.stringify(filteredData); // Convert to JSON string
+ 
         var requestData = {
             form_data: jsonData // Store full form data in u_json_data field
         };
-
+ 
         // HTTP POST Request to Save Data
         $http.post(apiUrl, requestData).then(
             function (response) {
@@ -84,9 +109,8 @@
             }
         );
     };
-
-}	
-]]></client_script>
+ 
+}	]]></client_script>
         <controller_as>c</controller_as>
         <css>.table {
   width: 100%;
@@ -142,48 +166,47 @@
         <sys_created_by>admin</sys_created_by>
         <sys_created_on>2025-02-07 11:28:33</sys_created_on>
         <sys_id>50e2518ac36752105db3b8ddd401312d</sys_id>
-        <sys_mod_count>97</sys_mod_count>
+        <sys_mod_count>104</sys_mod_count>
         <sys_name>Emp Qualification</sys_name>
         <sys_package display_value="Story-I Qualification Needed For Job" source="x_1589793_story_i">140ec9c2c32752105db3b8ddd40131b4</sys_package>
         <sys_policy/>
         <sys_scope display_value="Story-I Qualification Needed For Job">140ec9c2c32752105db3b8ddd40131b4</sys_scope>
         <sys_update_name>sp_widget_50e2518ac36752105db3b8ddd401312d</sys_update_name>
         <sys_updated_by>admin</sys_updated_by>
-        <sys_updated_on>2025-02-12 09:56:32</sys_updated_on>
+        <sys_updated_on>2025-02-12 10:35:13</sys_updated_on>
         <template><![CDATA[<div class="table-responsive">
-  <table class="table table-bordered">
-    <thead>
-      <tr>
-        <th>Regime</th>
-        <th>Requested Qualification</th>
-        <th>Status</th>
-        <th>Qualification Available</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr ng-repeat-start="qualification in data.qualifications">
-        <td>{{qualification.regime}}</td>
-        <td>{{qualification.requestedQualification}}</td>
-        <td>{{qualification.status}}</td>
-        <td>
-          <button class="btn btn-primary" ng-click="toggleYesSection(qualification)">
+<table class="table table-bordered">
+<thead>
+<tr>
+<th>Regime</th>
+<th>Requested Qualification</th>
+<th>Status</th>
+<th>Qualification Available</th>
+</tr>
+</thead>
+<tbody>
+<tr ng-repeat-start="qualification in data.qualifications">
+<td>{{qualification.regime}}</td>
+<td>{{qualification.requestedQualification}}</td>
+<td>{{qualification.status}}</td>
+<td>
+<button class="btn btn-primary" ng-click="toggleYesSection(qualification)">
             {{qualification.showYesSection ? 'Hide Yes Section' : 'Yes'}}
-          </button>
-          <button class="btn btn-danger" ng-click="toggleNoSection(qualification)">
+</button>
+<button class="btn btn-danger" ng-click="toggleNoSection(qualification)">
             {{qualification.showNoSection ? 'Hide No Section' : 'No'}}
-          </button>
-        </td>
-      </tr>
-      
-      <tr ng-if="qualification.showYesSection">
+</button>
+</td>
+</tr>
+<tr ng-if="qualification.showYesSection">
 <td colspan="4">
 <div class="upload-section">
 <p class="info-text">Uploads are only needed for exams taken in the last 12 months. If your exam is older, please contact support.</p>
 <div class="form-group half-width">
-  <label>Qualification Pass Date:</label>
-  <input type="date" ng-model="qualification.passDate" class="form-control">
+<label>Qualification Pass Date:</label>
+<input type="date" ng-model="qualification.passDate" class="form-control">
 </div>
-
+ 
 <div class="form-group m-5">
 <label>Upload Qualification Evidence:</label>
 <button class="btn btn-primary" ng-click="triggerFileUpload()">Upload File</button>
@@ -193,46 +216,44 @@
 </div>
 </td>
 </tr>
-
+ 
       <!-- "No" Section -->
-      <tr ng-if="qualification.showNoSection" ng-repeat-end>
-        <td colspan="4">
-          <div class="alternative-options half-width">
-            <label>Select Alternative Options</label>
-            <select class="form-control" ng-model="qualification.selectedAlternative" ng-options="option for option in qualification.alternativeOptions">
-              <option value="">None</option>
-            </select>
-          </div>
-
-          <!-- Show Alternative Sub-Options When Selected -->
-          <div ng-if="qualification.selectedAlternative">
-            <h5>Alternative Qualification</h5>
-            <div class="form-group half-width ">
-              <label>{{qualification.selectedAlternative}} Pass Date:</label>
-              <input type="date" ng-model="qualification.passDate" class="form-control">
-            </div>
-            <div class="form-group">
-              <label>Upload Qualification Evidence:</label>
-              <button class="btn btn-primary" ng-click="triggerFileUpload()">Upload File</button>
-              <input type="file" id="fileInput" class="form-control" style="display: none;" ng-model="qualification.evidenceFile">
-              <span ng-if="qualification.evidenceFile">File Uploaded: {{qualification.evidenceFile.name}}</span>
-            </div>
-          </div>
-        </td>
-      </tr>
-      
-      <tr>
-      <td>
-       <div class="d-flex justify-content-center mt-3">
-  <button class="btn btn-success" ng-click="saveForm()">Save</button>
+<tr ng-if="qualification.showNoSection" ng-repeat-end>
+<td colspan="4">
+<div class="alternative-options half-width">
+<label>Select Alternative Options</label>
+<select class="form-control" ng-model="qualification.selectedAlternative" ng-options="option for option in qualification.alternativeOptions">
+<option value="">None</option>
+</select>
 </div>
-
+ 
+          <!-- Show Alternative Sub-Options When Selected -->
+<div ng-if="qualification.selectedAlternative">
+<h5>Alternative Qualification</h5>
+<div class="form-group half-width ">
+<label>{{qualification.selectedAlternative}} Pass Date:</label>
+<input type="date" ng-model="qualification.passDate" class="form-control">
+</div>
+<div class="form-group">
+<label>Upload Qualification Evidence:</label>
+<button class="btn btn-primary" ng-click="triggerFileUpload()">Upload File</button>
+<input type="file" id="fileInput" class="form-control" style="display: none;" ng-model="qualification.evidenceFile">
+<span ng-if="qualification.evidenceFile">File Uploaded: {{qualification.evidenceFile.name}}</span>
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td>
+<div class="d-flex justify-content-center mt-3">
+<button class="btn btn-success" ng-click="saveForm()">Save</button>
+</div>
+ 
         </td>
-      </tr>
-
+</tr>
+ 
     </tbody>
-    
-  </table>
+</table>
 </div>]]></template>
     </sp_widget>
 </record_update>
