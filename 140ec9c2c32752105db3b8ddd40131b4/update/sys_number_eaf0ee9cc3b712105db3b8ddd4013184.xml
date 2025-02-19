@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_number">
+    <sys_number action="INSERT_OR_UPDATE">
+        <category display_value="" name="x_1589793_story_i_qualification_data">x_1589793_story_i_qualification_data</category>
+        <maximum_digits>6</maximum_digits>
+        <number>3000</number>
+        <prefix>QUA</prefix>
+        <sys_class_name>sys_number</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2025-02-14 16:56:06</sys_created_on>
+        <sys_id>eaf0ee9cc3b712105db3b8ddd4013184</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>QUA</sys_name>
+        <sys_package display_value="Story-I Qualification Needed For Job" source="x_1589793_story_i">140ec9c2c32752105db3b8ddd40131b4</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Story-I Qualification Needed For Job">140ec9c2c32752105db3b8ddd40131b4</sys_scope>
+        <sys_update_name>sys_number_eaf0ee9cc3b712105db3b8ddd4013184</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2025-02-14 16:56:06</sys_updated_on>
+    </sys_number>
+</record_update>
